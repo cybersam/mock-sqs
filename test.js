@@ -30,12 +30,11 @@ describe( '.createQueue', function () {
     })
     
     it( 'sets the queue name and baseUrl', function ( done ) {
-        var sqsObj = new mocksqs.SQS();
-        sqsObj.setMockOpts({
+        mocksqs.setMockOpts({
           baseUrl: TEST_URL,
           accountId: TEST_ACCOUNT_ID
         });
-        var sqs = Promise.promisifyAll( sqsObj );
+        var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
             QueueName: TEST_QUEUE_NAME
         })
