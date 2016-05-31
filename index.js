@@ -11,11 +11,14 @@ module.exports.reset = function () {
 function SQS ( options ) {
     options = options || {};
     this.config = extend({
-        region: 'us-east-1', // region is only used to generate the base url if baseUrl is not specified
-        accountId: '123456789'
+        region: 'us-east-1'
     }, options );
     this.params = options.params || {};
 }
+
+SQS.prototype.setMockOpts = function (opts) {
+  this.mock_opts = opts;
+};
 
 SQS.prototype.createQueue = function ( params, callback ) {
     callback = callback || function () {}
@@ -28,8 +31,8 @@ SQS.prototype.createQueue = function ( params, callback ) {
     }
 
     var region = this.config.region;
-    var accountId = this.config.accountId;
-    var baseUrl = this.config.baseUrl;
+    var accountId = (this.mock_opts && this.mock_opts.accountId) || '123456789';
+    var baseUrl = (this.mock_opts && this.mock_opts.baseUrl) || undefined;
     var qurl = baseUrl ?
       util.format('%s%s%s/%s', baseUrl, baseUrl.endsWith('/') ? '' : '/', accountId, qname) :
       util.format('https://sqs.%s.amazonaws.com/%s/%s', region, accountId, qname);

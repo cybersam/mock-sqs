@@ -1,6 +1,6 @@
 {
   "name": "mock-sqs",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Mocking library for Amazon's SQS Node.js SDK",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,9 @@
     "sdk"
   ],
   "author": "Roi Avinoam <avinoamr@gmail.com>",
+  "contributors": [
+    "Samuel Yang"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/panoplyio/mock-sqs/issues"
