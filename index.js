@@ -204,6 +204,7 @@ SQS.prototype.sendMessage = function ( params, callback ) {
     setTimeout( function () {
         callback( null, {
             MessageId: messageId,
+            ResponseMetadata: {RequestId: '232c557d-b1ed-54a1-a88c-180f7aaf3eb3'}
         })
     })
 }
