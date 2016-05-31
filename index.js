@@ -23,7 +23,7 @@ function createQueue( params, callback ) {
         return;
     }
 
-    var region = this.config.region;
+    var region = (this.config && this.config.region) || undefined;
     var accountId = (mock_opts && mock_opts.accountId) || '123456789';
     var baseUrl = (mock_opts && mock_opts.baseUrl) || undefined;
     var qurl = baseUrl ?
