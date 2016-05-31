@@ -11,16 +11,9 @@ module.exports.reset = function () {
 module.exports.setMockOpts = function (opts) {
   mock_opts = opts;
 };
+module.exports.createQueue = createQueue;
 
-function SQS ( options ) {
-    options = options || {};
-    this.config = extend({
-        region: 'us-east-1'
-    }, options );
-    this.params = options.params || {};
-}
-
-SQS.prototype.createQueue = function ( params, callback ) {
+function createQueue( params, callback ) {
     callback = callback || function () {}
     params = extend( {}, this.params, params );
 
@@ -65,6 +58,16 @@ SQS.prototype.createQueue = function ( params, callback ) {
         })
     })
 }
+
+function SQS ( options ) {
+    options = options || {};
+    this.config = extend({
+        region: 'us-east-1'
+    }, options );
+    this.params = options.params || {};
+}
+
+SQS.prototype.createQueue = createQueue;
 
 SQS.prototype.getQueueAttributes = function ( params, callback ) {
     callback = callback || function () {}
