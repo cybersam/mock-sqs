@@ -3,6 +3,10 @@ var Promise = require( 'bluebird' );
 
 var mocksqs = require( './index' );
 
+var TEST_URL = 'https://queue.amazonaws.com';
+var TEST_ACCOUNT_ID = '123456789012';
+var TEST_QUEUE_NAME = 'q1';
+
 afterEach( function () {
     mocksqs.reset();
 })
@@ -14,12 +18,28 @@ describe( '.createQueue', function () {
             region: 'hello'
         }) );
         sqs.createQueueAsync({
-            QueueName: 'q1'
+            QueueName: TEST_QUEUE_NAME
         })
         .then( function ( res ) {
             assert( res.QueueUrl );
             assert.equal( res.QueueUrl.split( '.' )[ 1 ], 'hello' );
-            assert.equal( res.QueueUrl.split( '/' ).pop(), 'q1' )
+            assert.equal( res.QueueUrl.split( '/' ).pop(), TEST_QUEUE_NAME )
+            done();
+        })
+        .catch( done );
+    })
+    
+    it( 'sets the queue name and baseUrl', function ( done ) {
+        var sqs = Promise.promisifyAll( new mocksqs.SQS({
+            baseUrl: TEST_URL,
+            accountId: TEST_ACCOUNT_ID
+        }) );
+        sqs.createQueueAsync({
+            QueueName: TEST_QUEUE_NAME
+        })
+        .then( function ( res ) {
+            assert( res.QueueUrl );
+            assert.equal( res.QueueUrl, TEST_URL + '/'  + TEST_ACCOUNT_ID + '/' + TEST_QUEUE_NAME);
             done();
         })
         .catch( done );
@@ -40,11 +60,11 @@ describe( '.createQueue', function () {
     it( 'fails when queue name already exists', function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1'
+            QueueName: TEST_QUEUE_NAME
         })
         .then( function () {
             return sqs.createQueueAsync({
-                QueueName: 'q1'
+                QueueName: TEST_QUEUE_NAME
             })
         })
         .then( function () {
@@ -59,7 +79,7 @@ describe( '.createQueue', function () {
     it( 'overwrites the default attributes', function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1',
+            QueueName: TEST_QUEUE_NAME,
             Attributes: {
                 DelaySeconds: 30,
                 MaximumMessageSize: 1024,
@@ -95,7 +115,7 @@ describe( '.getQueueAttributes', function () {
     beforeEach( function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1',
+            QueueName: TEST_QUEUE_NAME,
         })
         .then( function ( res ) {
             qurl = res.QueueUrl
@@ -234,7 +254,7 @@ describe( '.deleteQueue', function () {
     beforeEach( function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1'
+            QueueName: TEST_QUEUE_NAME
         })
         .then( function ( res ) {
             qurl = res.QueueUrl
@@ -281,7 +301,7 @@ describe( '.sendMessage', function () {
     beforeEach( function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1'
+            QueueName: TEST_QUEUE_NAME
         })
         .then( function ( res ) {
             qurl = res.QueueUrl
@@ -436,7 +456,7 @@ describe( '.receiveMessage', function () {
     beforeEach( function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1',
+            QueueName: TEST_QUEUE_NAME,
             Attributes: {
                 VisibilityTimeout: 0
             }
@@ -664,7 +684,7 @@ describe( '.deleteMessage', function () {
     beforeEach( function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1',
+            QueueName: TEST_QUEUE_NAME,
             Attributes: {
                 VisibilityTimeout: 0
             }
@@ -769,7 +789,7 @@ describe( '.purgeQueue', function () {
     beforeEach( function ( done ) {
         var sqs = Promise.promisifyAll( new mocksqs.SQS() );
         sqs.createQueueAsync({
-            QueueName: 'q1',
+            QueueName: TEST_QUEUE_NAME,
             Attributes: {
                 VisibilityTimeout: 0
             }
