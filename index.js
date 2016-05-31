@@ -1,5 +1,6 @@
 var extend = require( 'extend' );
 var uuid = require( 'node-uuid' );
+var util = require('util');
 
 var queues = {};
 module.exports.SQS = SQS;
@@ -10,8 +11,9 @@ module.exports.reset = function () {
 function SQS ( options ) {
     options = options || {};
     this.config = extend({
-        region: 'us-east-1',
-    }, options )
+        region: 'us-east-1', // region is only used to generate the base url if baseUrl is not specified
+        accountId: '123456789'
+    }, options );
     this.params = options.params || {};
 }
 
@@ -26,10 +28,14 @@ SQS.prototype.createQueue = function ( params, callback ) {
     }
 
     var region = this.config.region;
-    var qurl = [
-        'https://sqs.', region, '.amazonaws.com/123456789/', qname
-    ].join( '' ); 
+    var accountId = this.config.accountId;
+    var baseUrl = this.config.baseUrl;
+    var qurl = baseUrl ?
+      util.format('%s%s%s/%s', baseUrl, baseUrl.endsWith('/') ? '' : '/', accountId, qname) :
+      util.format('https://sqs.%s.amazonaws.com/%s/%s', region, accountId, qname);
     
+      console.log(qurl);
+      
     if ( queues[ qurl ] ) {
         callback( new Error( 'Queue "' + qname + '" already exists' ) );
         return;
